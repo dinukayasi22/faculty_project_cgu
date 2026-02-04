@@ -1,0 +1,41 @@
+{
+  "name": "cgu-portal",
+  "version": "1.0.0",
+  "description": "CGU Portal Backend - Student-Company Job Portal",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nodemon src/index.js",
+    "start": "node src/index.js",
+    "db:generate": "drizzle-kit generate:pg",
+    "db:push": "drizzle-kit push:pg",
+    "db:studio": "drizzle-kit studio",
+    "db:migrate": "node src/db/migrate.js"
+  },
+  "keywords": [
+    "cgu",
+    "portal",
+    "jobs",
+    "students",
+    "companies"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.3",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "drizzle-orm": "^0.29.5",
+    "express": "^4.22.1",
+    "googleapis": "^131.0.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.11",
+    "pg": "^8.17.1",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.20.18"
+  }
+}
