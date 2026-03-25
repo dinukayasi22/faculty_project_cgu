@@ -2,7 +2,8 @@ import bcrypt from 'bcrypt';
 import { db } from '../config/database.js';
 import { students, jobApplications, studentApplications, companies } from '../db/schema.js';
 import { eq, and } from 'drizzle-orm';
-import { uploadToGoogleDrive } from '../services/googleDrive.js';
+import { uploadToGoogleDrive, deleteFromGoogleDrive } from '../services/googleDrive.js';
+import { validateId } from '../utils/helpers.js';
 
 /**
  * Get student's own profile
@@ -201,6 +202,23 @@ export const deleteAccount = async (req, res) => {
             return;
         }
 
+        // Delete files from Google Drive
+        const fileDeletionPromises = [];
+        if (student.cvUrl) {
+            fileDeletionPromises.push(deleteFromGoogleDrive(student.cvUrl));
+        }
+        if (student.pdcTableUrl) {
+            fileDeletionPromises.push(deleteFromGoogleDrive(student.pdcTableUrl));
+        }
+        if (student.profilePictureUrl) {
+            fileDeletionPromises.push(deleteFromGoogleDrive(student.profilePictureUrl));
+        }
+
+        // Delete files in parallel (don't wait for completion, errors are logged)
+        Promise.all(fileDeletionPromises).catch((err) => {
+            console.error('Error deleting student files from Google Drive:', err);
+        });
+
         // Delete student (cascade will delete applications)
         await db.delete(students).where(eq(students.id, req.user.id));
 
@@ -258,7 +276,11 @@ export const applyForJob = async (req, res) => {
             return;
         }
 
-        const jobId = parseInt(req.params.jobId);
+        const jobId = validateId(req.params.jobId, 'Job ID');
+        if (!jobId) {
+            res.status(400).json({ error: 'Invalid job ID' });
+            return;
+        }
 
         // Check if student's CV is approved
         const [student] = await db
@@ -387,7 +409,11 @@ export const deleteApplication = async (req, res) => {
             return;
         }
 
-        const applicationId = parseInt(req.params.applicationId);
+        const applicationId = validateId(req.params.applicationId, 'Application ID');
+        if (!applicationId) {
+            res.status(400).json({ error: 'Invalid application ID' });
+            return;
+        }
 
         // Check if application exists and belongs to student
         const [application] = await db

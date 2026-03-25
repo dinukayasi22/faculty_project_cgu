@@ -3,6 +3,8 @@ import { db } from '../config/database.js';
 import { companies, jobApplications, studentApplications, students } from '../db/schema.js';
 import { eq, and } from 'drizzle-orm';
 import { jobPostingSchema, applicationStatusSchema } from '../utils/validation.js';
+import { deleteFromGoogleDrive } from '../services/googleDrive.js';
+import { validateId } from '../utils/helpers.js';
 
 /**
  * Get company's own profile
@@ -126,6 +128,13 @@ export const deleteAccount = async (req, res) => {
             return;
         }
 
+        // Delete logo from Google Drive if exists
+        if (company.logoUrl) {
+            deleteFromGoogleDrive(company.logoUrl).catch((err) => {
+                console.error('Error deleting company logo from Google Drive:', err);
+            });
+        }
+
         // Delete company (cascade will delete jobs and applications)
         await db.delete(companies).where(eq(companies.id, req.user.id));
 
@@ -232,7 +241,11 @@ export const updateJob = async (req, res) => {
             return;
         }
 
-        const jobId = parseInt(req.params.jobId);
+        const jobId = validateId(req.params.jobId, 'Job ID');
+        if (!jobId) {
+            res.status(400).json({ error: 'Invalid job ID' });
+            return;
+        }
 
         // Check if job exists and belongs to company
         const [job] = await db
@@ -292,7 +305,11 @@ export const deleteJob = async (req, res) => {
             return;
         }
 
-        const jobId = parseInt(req.params.jobId);
+        const jobId = validateId(req.params.jobId, 'Job ID');
+        if (!jobId) {
+            res.status(400).json({ error: 'Invalid job ID' });
+            return;
+        }
 
         // Check if job exists and belongs to company
         const [job] = await db
@@ -332,7 +349,11 @@ export const getJobApplicants = async (req, res) => {
             return;
         }
 
-        const jobId = parseInt(req.params.jobId);
+        const jobId = validateId(req.params.jobId, 'Job ID');
+        if (!jobId) {
+            res.status(400).json({ error: 'Invalid job ID' });
+            return;
+        }
 
         // Check if job exists and belongs to company
         const [job] = await db
@@ -391,7 +412,11 @@ export const updateApplicationStatus = async (req, res) => {
             return;
         }
 
-        const applicationId = parseInt(req.params.applicationId);
+        const applicationId = validateId(req.params.applicationId, 'Application ID');
+        if (!applicationId) {
+            res.status(400).json({ error: 'Invalid application ID' });
+            return;
+        }
 
         // Validate status
         const validatedData = applicationStatusSchema.parse(req.body);

@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+/* Local font imports (if you download the fonts) */
+@font-face {
+  font-family: 'Source Serif Pro';
+  src: url('./assets/fonts/SourceSerifPro-Regular.woff2') format('woff2'),
+       url('./assets/fonts/SourceSerifPro-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Source Serif 4';
+  src: url('./assets/fonts/SourceSerif4-Regular.woff2') format('woff2'),
+       url('./assets/fonts/SourceSerif4-Regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Fonts */
+  --font-family-sans: "Source Serif Pro", "Source Serif 4", Georgia, serif;
+  --font-family-serif: "Source Serif Pro", "Source Serif 4", Georgia, serif;
+
+  /* Colors */
+  --color-background: #f0f0f0;
+  --color-background-muted: #d9d9d9;
+  --color-text: #000000;
+  --color-text-muted: #ffffff;
+  --color-primary: #664621;
+  --color-secondary: #f5e4e4;
+  --color-accent: #324fd1;
+
+  /* Status Colors */
+  --color-danger: #bf191c;
+  --color-success: #4caf50;
+  --color-warning: #ff9800;
+  --color-info: #2196f3;
+
+  /* Font Sizes */
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-sm: 14px;
+  --font-size-xs: 12px;
+}
+
+/* Apply font family to all elements */
+* {
+  font-family: "Source Serif Pro", "Source Serif 4", Georgia, serif;
+}

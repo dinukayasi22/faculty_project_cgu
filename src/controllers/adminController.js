@@ -2,6 +2,7 @@ import { db } from '../config/database.js';
 import { students, companies } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
 import { cvReviewSchema } from '../utils/validation.js';
+import { validateId } from '../utils/helpers.js';
 
 /**
  * Get all students
@@ -68,7 +69,11 @@ export const getAllCompanies = async (req, res) => {
  */
 export const reviewStudentCV = async (req, res) => {
     try {
-        const studentId = parseInt(req.params.studentId);
+        const studentId = validateId(req.params.studentId, 'Student ID');
+        if (!studentId) {
+            res.status(400).json({ error: 'Invalid student ID' });
+            return;
+        }
 
         // Validate request
         const validatedData = cvReviewSchema.parse(req.body);
@@ -123,7 +128,11 @@ export const reviewStudentCV = async (req, res) => {
  */
 export const approveCompany = async (req, res) => {
     try {
-        const companyId = parseInt(req.params.companyId);
+        const companyId = validateId(req.params.companyId, 'Company ID');
+        if (!companyId) {
+            res.status(400).json({ error: 'Invalid company ID' });
+            return;
+        }
 
         // Check if company exists
         const [company] = await db
@@ -167,7 +176,11 @@ export const approveCompany = async (req, res) => {
  */
 export const rejectCompany = async (req, res) => {
     try {
-        const companyId = parseInt(req.params.companyId);
+        const companyId = validateId(req.params.companyId, 'Company ID');
+        if (!companyId) {
+            res.status(400).json({ error: 'Invalid company ID' });
+            return;
+        }
 
         // Check if company exists
         const [company] = await db
@@ -211,7 +224,11 @@ export const rejectCompany = async (req, res) => {
  */
 export const deleteStudent = async (req, res) => {
     try {
-        const studentId = parseInt(req.params.studentId);
+        const studentId = validateId(req.params.studentId, 'Student ID');
+        if (!studentId) {
+            res.status(400).json({ error: 'Invalid student ID' });
+            return;
+        }
 
         // Check if student exists
         const [student] = await db
@@ -248,7 +265,11 @@ export const deleteStudent = async (req, res) => {
  */
 export const deleteCompany = async (req, res) => {
     try {
-        const companyId = parseInt(req.params.companyId);
+        const companyId = validateId(req.params.companyId, 'Company ID');
+        if (!companyId) {
+            res.status(400).json({ error: 'Invalid company ID' });
+            return;
+        }
 
         // Check if company exists
         const [company] = await db

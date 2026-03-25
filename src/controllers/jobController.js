@@ -1,6 +1,7 @@
 import { db } from '../config/database.js';
 import { jobApplications, companies } from '../db/schema.js';
 import { eq } from 'drizzle-orm';
+import { validateId } from '../utils/helpers.js';
 
 /**
  * Get all jobs from approved companies
@@ -44,7 +45,11 @@ export const getAllJobs = async (req, res) => {
  */
 export const getJobDetails = async (req, res) => {
     try {
-        const jobId = parseInt(req.params.jobId);
+        const jobId = validateId(req.params.jobId, 'Job ID');
+        if (!jobId) {
+            res.status(400).json({ error: 'Invalid job ID' });
+            return;
+        }
 
         const [job] = await db
             .select({
